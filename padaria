@@ -28,6 +28,16 @@
       padding: 8px;
       width: 100%;
       box-sizing: border-box;
+      transition: transform 0.1s ease-in-out; /* Animação para o efeito de clique */
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      color: white;
+      font-size: 1em;
+    }
+    button:active {
+      transform: scale(0.95); /* Efeito de encolhimento ao clicar */
     }
     .product-list {
       list-style-type: none;
@@ -40,29 +50,22 @@
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
+      background-color: #e6ffe6; /* Fundo verde claro para os produtos */
     }
     .delete-btn {
       background-color: #ff4d4d;
-      color: white;
-      border: none;
-      padding: 3px 8px; /* Botão menor */
-      cursor: pointer;
-      font-size: 12px; /* Texto menor */
-      align-self: flex-end; /* Alinha à direita */
-    }
-    .save-btn, .clear-btn {
-      margin-top: 20px;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
+      padding: 3px 8px;
+      font-size: 12px;
+      align-self: flex-end;
     }
     .save-btn {
       background-color: #28a745;
-      color: white;
     }
     .clear-btn {
       background-color: #dc3545;
-      color: white;
+    }
+    .add-product-btn {
+      background-color: #28a745; /* Botão adicionar produto na cor verde */
     }
     .price-green {
       color: green;
@@ -73,10 +76,11 @@
       margin-bottom: 20px;
     }
     .logo-container img {
-      max-width: 100%;
+      max-width: 60%;
       height: auto;
       border: 2px solid #ddd;
       border-radius: 5px;
+      margin: 0 auto;
     }
     .logo-container h2 {
       font-size: 1.5em;
@@ -104,6 +108,9 @@
       .sidebar {
         border-left: 1px solid #ddd;
       }
+      .logo-container img {
+        max-width: 40%;
+      }
     }
   </style>
 </head>
@@ -119,7 +126,7 @@
     <input type="number" id="precoCusto" placeholder="Ex: 5.00" step="0.01">
     <label for="quantidade">Quantidade:</label>
     <input type="number" id="quantidade" placeholder="Ex: 10" step="1">
-    <button onclick="adicionarProduto()">Adicionar Produto</button>
+    <button class="add-product-btn" onclick="adicionarProduto()">Adicionar Produto</button>
   </div>
   <div class="sidebar">
     <h2>Lista de Produtos</h2>
@@ -134,20 +141,29 @@
       <input type="file" id="imageInput" style="display: none;" accept="image/*" onchange="carregarImagem()">
     </div>
   </div>
+  <audio id="clickSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
   <script>
     let productList = JSON.parse(localStorage.getItem('productList')) || [];
+    const clickSound = document.getElementById('clickSound');
+
+    function playClickSound() {
+      clickSound.currentTime = 0; // Reinicia o som para evitar atrasos
+      clickSound.play();
+    }
+
     function formatarReal(valor) {
       return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
     }
     function calcularPrecoVenda(precoCusto, quantidade) {
-      const precoPorUnidade = precoCusto / (quantidade || 1); // Divide pelo número de unidades
+      const precoPorUnidade = precoCusto / (quantidade || 1);
       if (precoPorUnidade <= 5) {
-        return precoPorUnidade * 1.75; // 75% de margem
+        return precoPorUnidade * 1.75;
       } else {
-        return precoPorUnidade * 1.5; // 50% de margem
+        return precoPorUnidade * 1.5;
       }
     }
     function adicionarProduto() {
+      playClickSound();
       const nomeProduto = document.getElementById('nomeProduto').value;
       const precoCusto = parseFloat(document.getElementById('precoCusto').value);
       const quantidade = parseInt(document.getElementById('quantidade').value) || 1;
@@ -189,6 +205,7 @@
       });
     }
     function deletarProduto(id) {
+      playClickSound();
       productList = productList.filter(produto => produto.id !== id);
       salvarNoLocalStorage();
       atualizarLista();
@@ -197,6 +214,7 @@
       localStorage.setItem('productList', JSON.stringify(productList));
     }
     function salvarLista() {
+      playClickSound();
       const json = JSON.stringify(productList);
       const blob = new Blob([json], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -207,11 +225,13 @@
       URL.revokeObjectURL(url);
     }
     function apagarLista() {
+      playClickSound();
       productList = [];
       salvarNoLocalStorage();
       atualizarLista();
     }
     function verificarSenha() {
+      playClickSound();
       const senhaDigitada = document.getElementById('passwordInput').value;
       if (senhaDigitada === '007') {
         document.getElementById('imageInput').click();
@@ -220,6 +240,7 @@
       }
     }
     function carregarImagem() {
+      playClickSound();
       const fileInput = document.getElementById('imageInput');
       const logoImage = document.getElementById('logoImage');
       if (fileInput.files && fileInput.files[0]) {
