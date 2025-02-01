@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Preço da Padaria Freitas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .container {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+      border-bottom: 1px solid #ddd;
+    }
+    .sidebar {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .product-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .product-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .delete-btn {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      padding: 3px 8px; /* Botão menor */
+      cursor: pointer;
+      font-size: 12px; /* Texto menor */
+      align-self: flex-end; /* Alinha à direita */
+    }
+    .save-btn, .clear-btn {
+      margin-top: 20px;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+    }
+    .save-btn {
+      background-color: #28a745;
+      color: white;
+    }
+    .clear-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .price-green {
+      color: green;
+      font-weight: bold;
+    }
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+    }
+    .logo-container h2 {
+      font-size: 1.5em;
+      margin: 10px 0;
+    }
+    .controls-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .controls-container button {
+      padding: 5px 10px;
+      font-size: 0.9em;
+    }
+    @media (min-width: 768px) {
+      body {
+        flex-direction: row;
+      }
+      .container {
+        border-right: 1px solid #ddd;
+        border-bottom: none;
+      }
+      .sidebar {
+        border-left: 1px solid #ddd;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img id="logoImage" src="" alt="Logo da Padaria Freitas" style="display: none;">
+      <h2>Calculadora de Preço</h2>
+    </div>
+    <label for="nomeProduto">Nome do Produto:</label>
+    <input type="text" id="nomeProduto" placeholder="Ex: Pão Francês">
+    <label for="precoCusto">Preço de Custo:</label>
+    <input type="number" id="precoCusto" placeholder="Ex: 5.00" step="0.01">
+    <label for="quantidade">Quantidade:</label>
+    <input type="number" id="quantidade" placeholder="Ex: 10" step="1">
+    <button onclick="adicionarProduto()">Adicionar Produto</button>
+  </div>
+  <div class="sidebar">
+    <h2>Lista de Produtos</h2>
+    <ul id="productList" class="product-list"></ul>
+    <div style="display: flex; gap: 10px;">
+      <button class="save-btn" onclick="salvarLista()">Salvar Lista</button>
+      <button class="clear-btn" onclick="apagarLista()">Apagar Lista</button>
+    </div>
+    <div class="controls-container">
+      <input type="password" id="passwordInput" class="password-input" placeholder="Digite a senha para carregar a imagem">
+      <button onclick="verificarSenha()">Carregar Imagem</button>
+      <input type="file" id="imageInput" style="display: none;" accept="image/*" onchange="carregarImagem()">
+    </div>
+  </div>
+  <script>
+    let productList = JSON.parse(localStorage.getItem('productList')) || [];
+    function formatarReal(valor) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    }
+    function calcularPrecoVenda(precoCusto, quantidade) {
+      const precoPorUnidade = precoCusto / (quantidade || 1); // Divide pelo número de unidades
+      if (precoPorUnidade <= 5) {
+        return precoPorUnidade * 1.75; // 75% de margem
+      } else {
+        return precoPorUnidade * 1.5; // 50% de margem
+      }
+    }
+    function adicionarProduto() {
+      const nomeProduto = document.getElementById('nomeProduto').value;
+      const precoCusto = parseFloat(document.getElementById('precoCusto').value);
+      const quantidade = parseInt(document.getElementById('quantidade').value) || 1;
+      if (!nomeProduto || isNaN(precoCusto)) {
+        alert('Por favor, preencha os campos corretamente.');
+        return;
+      }
+      const precoVenda = calcularPrecoVenda(precoCusto, quantidade);
+      const total = precoVenda * quantidade;
+      const produto = {
+        id: Date.now(),
+        nome: nomeProduto,
+        precoCusto: precoCusto.toFixed(2),
+        precoVenda: precoVenda.toFixed(2),
+        quantidade: quantidade,
+        total: total.toFixed(2)
+      };
+      productList.push(produto);
+      salvarNoLocalStorage();
+      atualizarLista();
+      // Limpar campos
+      document.getElementById('nomeProduto').value = '';
+      document.getElementById('precoCusto').value = '';
+      document.getElementById('quantidade').value = '';
+    }
+    function atualizarLista() {
+      const lista = document.getElementById('productList');
+      lista.innerHTML = '';
+      productList.forEach((produto, index) => {
+        const listItem = document.createElement('li');
+        listItem.className = 'product-item';
+        listItem.innerHTML = `
+          <strong>${produto.nome}</strong>
+          <div>Compra: ${formatarReal(produto.precoCusto)}</div>
+          <div>Venda: <span class="price-green">${formatarReal(produto.precoVenda)}</span></div>
+          <button class="delete-btn" onclick="deletarProduto(${produto.id})">Deletar</button>
+        `;
+        lista.appendChild(listItem);
+      });
+    }
+    function deletarProduto(id) {
+      productList = productList.filter(produto => produto.id !== id);
+      salvarNoLocalStorage();
+      atualizarLista();
+    }
+    function salvarNoLocalStorage() {
+      localStorage.setItem('productList', JSON.stringify(productList));
+    }
+    function salvarLista() {
+      const json = JSON.stringify(productList);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'lista_produtos.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    function apagarLista() {
+      productList = [];
+      salvarNoLocalStorage();
+      atualizarLista();
+    }
+    function verificarSenha() {
+      const senhaDigitada = document.getElementById('passwordInput').value;
+      if (senhaDigitada === '007') {
+        document.getElementById('imageInput').click();
+      } else {
+        alert('Senha incorreta!');
+      }
+    }
+    function carregarImagem() {
+      const fileInput = document.getElementById('imageInput');
+      const logoImage = document.getElementById('logoImage');
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          logoImage.src = e.target.result;
+          logoImage.style.display = 'block';
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      }
+    }
+    // Carregar lista ao iniciar a página
+    window.addEventListener('load', () => {
+      atualizarLista();
+    });
+  </script>
+</body>
+</html>
