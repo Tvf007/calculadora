@@ -4,170 +4,597 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Calculadora de Preço - Padaria Freitas</title>
+  
+  <!-- Google Fonts - Fontes modernas para aplicativos web -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    :root {
+      --primary-color: #581d22;
+      --primary-dark: #3d1417;
+      --primary-light: #7a2a2f;
+      --accent-green: #10b981;
+      --accent-green-hover: #059669;
+      --danger-red: #ef4444;
+      --danger-hover: #dc2626;
+      --blue-primary: #3b82f6;
+      --blue-hover: #2563eb;
+      --purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      --card-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.15);
+      --border-radius: 20px;
+      --border-radius-sm: 12px;
+      --border-radius-lg: 24px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
       display: flex;
-      height: 100vh;
       flex-direction: column;
+      color: #1f2937;
+      line-height: 1.6;
+      letter-spacing: -0.01em;
+    }
+
+    .main-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 24px;
+      gap: 24px;
     }
 
     .container {
       flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
-      border-bottom: 1px solid #ddd;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .container:hover {
+      box-shadow: var(--card-shadow-hover);
     }
 
     .sidebar {
-      flex: 1;
-      padding: 20px;
-      box-sizing: border-box;
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    input, button {
+    .sidebar:hover {
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    input {
       margin: 10px 0;
-      padding: 8px;
+      padding: 16px 20px;
       width: 100%;
-      box-sizing: border-box;
-      transition: transform 0.1s ease-in-out;
+      border: 2px solid #e5e7eb;
+      border-radius: var(--border-radius-sm);
+      font-size: 15px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: var(--transition-fast);
+      background: #f9fafb;
+      font-weight: 500;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(88, 29, 34, 0.08);
+      transform: translateY(-1px);
+    }
+
+    input::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
     }
 
     button {
       cursor: pointer;
       border: none;
       color: white;
-      font-size: 1em;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 16px 24px;
+      border-radius: var(--border-radius-sm);
+      transition: var(--transition-fast);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: var(--transition);
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     }
 
     button:active {
-      transform: scale(0.95);
+      transform: translateY(-1px);
     }
 
     .product-list {
       list-style-type: none;
       padding: 0;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .product-list::-webkit-scrollbar {
+      width: 8px;
     }
 
     .product-item {
       display: flex;
       flex-direction: column;
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      background-color: #e6ffe6;
+      margin-bottom: 16px;
+      padding: 24px;
+      border: 2px solid #e5e7eb;
+      border-radius: var(--border-radius);
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      transition: var(--transition);
+      animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      gap: 12px;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    .product-item:hover {
+      border-color: var(--accent-green);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+      transform: translateX(8px) scale(1.01);
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .product-name {
+      color: var(--primary-color);
+      font-size: 20px;
+      font-family: 'Manrope', sans-serif;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+
+    .product-detail {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .product-detail strong {
+      color: #374151;
+      font-weight: 600;
+    }
+
+    .quantity-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+      color: #4338ca;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 80px;
+    }
+
+    .price-container {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      padding: 16px 20px;
+      border-radius: var(--border-radius-sm);
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      margin-top: 8px;
+    }
+
+    .price-label {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .price-value {
+      color: white;
+      font-weight: 800;
+      font-size: 28px;
+      font-family: 'Manrope', sans-serif;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      letter-spacing: -0.02em;
     }
 
     .delete-btn {
-      background-color: #ff4d4d;
-      padding: 3px 8px;
-      font-size: 12px;
+      background: var(--danger-red);
+      padding: 12px 18px;
+      font-size: 13px;
       align-self: flex-end;
+      margin-top: 8px;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .delete-btn:hover {
+      background: var(--danger-hover);
     }
 
     .save-btn {
-      background-color: #28a745;
+      background: var(--accent-green);
+      width: 100%;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .save-btn:hover {
+      background: var(--accent-green-hover);
     }
 
     .clear-btn {
-      background-color: #dc3545;
+      background: var(--danger-red);
+      width: 100%;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .clear-btn:hover {
+      background: var(--danger-hover);
     }
 
     .add-product-btn {
-      background-color: #28a745;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+      margin-top: 12px;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .add-product-btn:hover {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+    }
+
+    .download-btn {
+      background: var(--blue-primary);
+      width: 100%;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .download-btn:hover {
+      background: var(--blue-hover);
+    }
+
+    .share-btn {
+      background: var(--purple-gradient);
+      width: 100%;
+      border-radius: var(--border-radius-sm);
     }
 
     .price-green {
-      color: green;
-      font-weight: bold;
+      color: var(--accent-green);
+      font-weight: 800;
+      font-size: 17px;
+      font-family: 'Manrope', sans-serif;
     }
 
     .logo-container {
       text-align: center;
-      margin-bottom: 20px;
-      background-color: #581d22;
-      padding: 15px;
-      border-radius: 8px;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      padding: 28px;
+      border-radius: var(--border-radius-lg);
+      box-shadow: 0 8px 30px rgba(88, 29, 34, 0.3);
+      position: relative;
+      overflow: hidden;
     }
 
-    .logo-container img {
-      max-width: 60%;
-      height: auto;
-      border: 2px solid #ddd;
-      border-radius: 5px;
-      margin: 0 auto;
+    .logo-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      opacity: 0.5;
     }
 
-    .logo-container h2,
-    .logo-container p {
+    .logo-container h2 {
       color: white;
-      margin: 5px 0;
+      font-family: 'Manrope', sans-serif;
+      font-size: 30px;
+      margin-bottom: 8px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-container p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
     }
 
     .controls-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 12px;
     }
 
-    .controls-container button {
-      padding: 5px 10px;
-      font-size: 0.9em;
+    .section-title {
+      font-family: 'Manrope', sans-serif;
+      font-size: 20px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     @media (min-width: 768px) {
-      body {
+      .main-wrapper {
         flex-direction: row;
+        padding: 40px;
       }
 
       .container {
-        border-right: 1px solid #ddd;
-        border-bottom: none;
+        border-right: 1px solid #e5e7eb;
       }
 
-      .sidebar {
-        border-left: 1px solid #ddd;
+      .logo-container h2 {
+        font-size: 34px;
       }
 
-      .logo-container img {
-        max-width: 40%;
+      .product-item {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
       }
+
+      .product-info {
+        flex: 1;
+      }
+
+      .price-container {
+        margin-top: 0;
+        min-width: 140px;
+      }
+
+      .delete-btn {
+        align-self: center;
+        margin-top: 0;
+      }
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: white;
+      padding: 18px 26px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+      display: none;
+      align-items: center;
+      gap: 14px;
+      z-index: 1000;
+      animation: toastSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-left: 5px solid var(--accent-green);
+      backdrop-filter: blur(10px);
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    @keyframes toastSlide {
+      from {
+        opacity: 0;
+        transform: translateX(100px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    .toast-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: #9ca3af;
+      font-style: italic;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* Scrollbar moderna */
+    .product-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .product-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .product-list::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--primary-color), var(--primary-light));
+      border-radius: 10px;
+    }
+
+    .product-list::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, var(--primary-dark), var(--primary-color));
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo-container">
-      <h2>Calculadora de Preço</h2>
-      <p>Padaria Freitas</p>
+  <div class="main-wrapper">
+    <div class="container">
+      <div class="logo-container">
+        <h2>🍞 Calculadora de Preço</h2>
+        <p>Padaria Freitas</p>
+      </div>
+      
+      <input type="text" id="produto" placeholder="📦 Nome do produto" />
+      <input type="text" id="precoCusto" placeholder="💰 Preço de custo (R$)" />
+      <input type="text" id="quantidade" placeholder="🔢 Quantidade (somente números)" inputmode="numeric" pattern="[0-9]*" />
+      <button class="add-product-btn" onclick="adicionarProduto()">
+        ➕ Adicionar Produto
+      </button>
+      
+      <ul class="product-list" id="listaProdutos">
+        <li class="empty-state">Nenhum produto adicionado ainda</li>
+      </ul>
     </div>
-    <input type="text" id="produto" placeholder="Nome do produto" />
-    <input type="text" id="precoCusto" placeholder="Preço de custo (R$)" />
-    <input type="number" id="quantidade" placeholder="Quantidade" />
-    <button class="add-product-btn" onclick="adicionarProduto()">Adicionar Produto</button>
-    <ul class="product-list" id="listaProdutos"></ul>
-  </div>
-  <div class="sidebar">
-    <div class="controls-container">
-      <button class="save-btn" onclick="salvarProdutos()">Salvar Lista</button>
-      <button class="clear-btn" onclick="limparLista()">Limpar Lista</button>
+    
+    <div class="sidebar">
+      <h3 class="section-title">⚙️ Ações</h3>
+      
+      <div class="button-group">
+        <button class="save-btn" onclick="salvarProdutos()">
+          💾 Salvar no Navegador
+        </button>
+        
+        <button class="download-btn" onclick="baixarArquivo()">
+          📥 Baixar no Dispositivo
+        </button>
+        
+        <button class="share-btn" onclick="compartilharLista()">
+          🔗 Compartilhar
+        </button>
+        
+        <button class="clear-btn" onclick="limparLista()">
+          🗑️ Limpar Lista
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Áudio do cadastro -->
   <audio id="somCadastro" src="sucesso.mp3" preload="auto"></audio>
+  
+  <!-- Toast notification -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">✓</div>
+    <span id="toast-message">Operação realizada!</span>
+  </div>
 
   <script>
     const precoCustoInput = document.getElementById("precoCusto");
+    const quantidadeInput = document.getElementById("quantidade");
 
+    // Formata o campo de preço de custo para moeda brasileira
     precoCustoInput.addEventListener("input", function (e) {
       let valor = e.target.value.replace(/\D/g, "");
       valor = (parseInt(valor, 10) / 100).toFixed(2);
       e.target.value = "R$" + valor.replace(".", ",");
+    });
+
+    // Permite apenas números no campo de quantidade
+    quantidadeInput.addEventListener("input", function (e) {
+      e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Impede colagem de texto não numérico no campo quantidade
+    quantidadeInput.addEventListener("paste", function (e) {
+      const texto = e.clipboardData.getData('text');
+      if (!/^\d+$/.test(texto)) {
+        e.preventDefault();
+      }
+    });
+
+    // Impede entrada de letras no campo quantidade
+    quantidadeInput.addEventListener("keypress", function (e) {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
     });
 
     function parsePreco(precoFormatado) {
@@ -188,59 +615,230 @@
       return precoVenda;
     }
 
+    function mostrarToast(mensagem) {
+      const toast = document.getElementById("toast");
+      const toastMessage = document.getElementById("toast-message");
+      toastMessage.textContent = mensagem;
+      toast.classList.add("show");
+      
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    function atualizarEmptyState() {
+      const lista = document.getElementById("listaProdutos");
+      const emptyState = lista.querySelector(".empty-state");
+      
+      if (lista.children.length > 0 && !emptyState) {
+        // Remove empty state se existir e tiver produtos
+        if (emptyState) emptyState.remove();
+      } else if (lista.children.length === 0) {
+        // Adiciona empty state se não tiver produtos
+        const newState = document.createElement("li");
+        newState.className = "empty-state";
+        newState.textContent = "Nenhum produto adicionado ainda";
+        lista.appendChild(newState);
+      }
+    }
+
     function adicionarProduto() {
       const nomeProduto = document.getElementById("produto").value.trim();
       const precoCustoFormatado = document.getElementById("precoCusto").value.trim();
-      const quantidade = parseInt(document.getElementById("quantidade").value.trim()) || 1;
+      let quantidadeValor = document.getElementById("quantidade").value.trim();
+      
+      // Remove tudo que não é número do campo quantidade
+      quantidadeValor = quantidadeValor.replace(/\D/g, '');
+      const quantidade = parseInt(quantidadeValor, 10) || 1;
 
       if (!nomeProduto || !precoCustoFormatado) {
-        alert("Por favor, preencha todos os campos.");
+        alert("⚠️ Por favor, preencha todos os campos.");
         return;
       }
 
       const precoCusto = parsePreco(precoCustoFormatado);
       const precoVenda = calcularPrecoVenda(precoCusto, quantidade);
+      
+      const precoCustoFormatadoBR = precoCusto.toFixed(2).replace(".", ",");
+      const precoVendaFormatadoBR = precoVenda.toFixed(2).replace(".", ",");
 
       const item = document.createElement("li");
       item.className = "product-item";
       item.innerHTML = `
-        <strong>${nomeProduto}</strong>
-        <span>Preço de Custo: <strong>R$ ${precoCusto.toFixed(2).replace(".", ",")}</strong></span>
-        <span>Quantidade: ${quantidade}</span>
-        <span>Preço de Venda: <span class="price-green">R$ ${precoVenda.toFixed(2).replace(".", ",")}</span></span>
-        <button class="delete-btn" onclick="this.parentElement.remove()">Remover</button>
+        <div class="product-info">
+          <div class="product-name">${nomeProduto}</div>
+          <div class="product-detail">
+            <span>💰 Custo:</span>
+            <strong>R$ ${precoCustoFormatadoBR}</strong>
+          </div>
+          <div class="product-detail">
+            <span>📦 Quantidade:</span>
+            <span class="quantity-badge">${quantidade} un</span>
+          </div>
+        </div>
+        <div class="price-container">
+          <div class="price-label">Preço de Venda</div>
+          <div class="price-value">R$ ${precoVendaFormatadoBR}</div>
+        </div>
+        <button class="delete-btn" onclick="this.parentElement.remove(); atualizarEmptyState();">❌ Remover</button>
       `;
 
       const lista = document.getElementById("listaProdutos");
-      lista.insertBefore(item, lista.firstChild); // adiciona no topo da lista
+      
+      // Remove empty state se existir
+      const emptyState = lista.querySelector(".empty-state");
+      if (emptyState) emptyState.remove();
+      
+      lista.insertBefore(item, lista.firstChild);
 
       // Reproduzir som
       const som = document.getElementById("somCadastro");
       som.currentTime = 0;
-      som.play();
+      som.play().catch(e => console.log("Audio play failed:", e));
 
       document.getElementById("produto").value = "";
       document.getElementById("precoCusto").value = "";
       document.getElementById("quantidade").value = "";
+      
+      mostrarToast("✅ Produto adicionado com sucesso!");
+    }
+
+    function obterDadosProdutos() {
+      const produtos = [];
+      const items = document.querySelectorAll(".product-item");
+      
+      items.forEach(item => {
+        const nome = item.querySelector(".product-name").textContent;
+        const precoCustoEl = item.querySelector(".product-detail strong");
+        const quantidadeEl = item.querySelector(".quantity-badge");
+        const precoVendaEl = item.querySelector(".price-value");
+        
+        const precoCusto = precoCustoEl ? precoCustoEl.textContent.replace("R$", "").trim() : "";
+        const quantidade = quantidadeEl ? quantidadeEl.textContent.replace(" un", "").trim() : "";
+        const precoVenda = precoVendaEl ? precoVendaEl.textContent.replace("R$", "").trim() : "";
+        
+        produtos.push({
+          nome,
+          precoCusto,
+          quantidade,
+          precoVenda
+        });
+      });
+      
+      return produtos;
     }
 
     function salvarProdutos() {
       const lista = document.getElementById("listaProdutos").innerHTML;
       localStorage.setItem("produtosPadaria", lista);
-      alert("Lista salva com sucesso!");
+      mostrarToast("💾 Lista salva no navegador!");
+    }
+
+    function baixarArquivo() {
+      const produtos = obterDadosProdutos();
+      
+      if (produtos.length === 0) {
+        alert("⚠️ Não há produtos para baixar!");
+        return;
+      }
+
+      // Criar conteúdo JSON
+      const dadosJSON = {
+        titulo: "Calculadora de Preço - Padaria Freitas",
+        data: new Date().toLocaleDateString("pt-BR"),
+        produtos: produtos
+      };
+
+      // Criar conteúdo CSV
+      let csvContent = "Produto,Preço de Custo,Quantidade,Preço de Venda\n";
+      produtos.forEach(p => {
+        csvContent += `"${p.nome}",R$${p.precoCusto},${p.quantidade},R$${p.precoVenda}\n`;
+      });
+
+      // Criar blob e download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `produtos-padaria-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      mostrarToast("📥 Arquivo baixado com sucesso!");
+    }
+
+    async function compartilharLista() {
+      const produtos = obterDadosProdutos();
+      
+      if (produtos.length === 0) {
+        alert("⚠️ Não há produtos para compartilhar!");
+        return;
+      }
+
+      // Formatar texto para compartilhamento
+      let textoCompartilhamento = "🍞 *Calculadora de Preço - Padaria Freitas*\n\n";
+      textoCompartilhamento += `📅 Data: ${new Date().toLocaleDateString("pt-BR")}\n\n`;
+      textoCompartilhamento += "━━━━━━━━━━━━━━━━━━━━━━\n\n";
+      
+      produtos.forEach((p, index) => {
+        textoCompartilhamento += `${index + 1}. *${p.nome}*\n`;
+        textoCompartilhamento += `   💰 Custo: R$${p.precoCusto}\n`;
+        textoCompartilhamento += `   🔢 Qtd: ${p.quantidade}\n`;
+        textoCompartilhamento += `   💵 Venda: R$${p.precoVenda}\n\n`;
+      });
+      
+      textoCompartilhamento += "━━━━━━━━━━━━━━━━━━━━━━";
+
+      // Tentar usar Web Share API
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Calculadora de Preço - Padaria Freitas",
+            text: textoCompartilhamento,
+            url: window.location.href
+          });
+          mostrarToast("🔗 Compartilhado com sucesso!");
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            copiarParaAreaTransferencia(textoCompartilhamento);
+          }
+        }
+      } else {
+        // Fallback: copiar para área de transferência
+        copiarParaAreaTransferencia(textoCompartilhamento);
+      }
+    }
+
+    function copiarParaAreaTransferencia(texto) {
+      navigator.clipboard.writeText(texto).then(() => {
+        mostrarToast("📋 Copiado para a área de transferência!");
+      }).catch(() => {
+        // Fallback antigo
+        const textarea = document.createElement("textarea");
+        textarea.value = texto;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        mostrarToast("📋 Copiado para a área de transferência!");
+      });
     }
 
     function limparLista() {
-      if (confirm("Tem certeza que deseja limpar a lista?")) {
-        document.getElementById("listaProdutos").innerHTML = "";
+      if (confirm("⚠️ Tem certeza que deseja limpar a lista?")) {
+        document.getElementById("listaProdutos").innerHTML = '<li class="empty-state">Nenhum produto adicionado ainda</li>';
         localStorage.removeItem("produtosPadaria");
+        mostrarToast("🗑️ Lista limpa com sucesso!");
       }
     }
 
     window.onload = function () {
       const listaSalva = localStorage.getItem("produtosPadaria");
-      if (listaSalva) {
+      if (listaSalva && listaSalva.trim() !== "") {
         document.getElementById("listaProdutos").innerHTML = listaSalva;
+        atualizarEmptyState();
       }
     };
   </script>
