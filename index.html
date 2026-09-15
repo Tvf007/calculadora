@@ -523,7 +523,7 @@
       </div>
       
       <input type="text" id="produto" placeholder="📦 Nome do produto" />
-      <input type="text" id="precoCusto" placeholder="💰 Preço de custo (R$)" />
+      <input type="text" id="precoCusto" placeholder="💰 Preço de custo (R$)" inputmode="numeric" pattern="[0-9]*" />
       <input type="text" id="quantidade" placeholder="🔢 Quantidade (somente números)" inputmode="numeric" pattern="[0-9]*" />
       <button class="add-product-btn" onclick="adicionarProduto()">
         ➕ Adicionar Produto
@@ -570,11 +570,30 @@
     const precoCustoInput = document.getElementById("precoCusto");
     const quantidadeInput = document.getElementById("quantidade");
 
-    // Formata o campo de preço de custo para moeda brasileira
+    // Formata o campo de preço de custo para moeda brasileira - ACEITA APENAS NÚMEROS
     precoCustoInput.addEventListener("input", function (e) {
       let valor = e.target.value.replace(/\D/g, "");
+      if (valor === "") {
+        e.target.value = "";
+        return;
+      }
       valor = (parseInt(valor, 10) / 100).toFixed(2);
       e.target.value = "R$" + valor.replace(".", ",");
+    });
+
+    // Impede colagem de texto não numérico no campo de preço
+    precoCustoInput.addEventListener("paste", function (e) {
+      const texto = e.clipboardData.getData('text');
+      if (!/^\d+$/.test(texto)) {
+        e.preventDefault();
+      }
+    });
+
+    // Impede entrada de letras no campo de preço
+    precoCustoInput.addEventListener("keypress", function (e) {
+      if (!/[0-9]/.test(e.key)) {
+        e.preventDefault();
+      }
     });
 
     // Permite apenas números no campo de quantidade
